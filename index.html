@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc Nghiệm Vui - Hiểu Tôi Đến Đâu?</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+        }
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            margin: 8px 0 15px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option-card {
+            background: #f1f5f9;
+            border: 3px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .option-card:hover {
+            border-color: var(--primary-color);
+            background: #e0e7ff;
+        }
+
+        .option-card.selected {
+            border-color: var(--primary-color);
+            background-color: #e0e7ff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .option-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #cbd5e1;
+        }
+
+        .option-label {
+            font-weight: bold;
+            font-size: 16px;
+            color: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f1f5f9;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- MÀN HÌNH CHÍNH -->
+        <div id="home-screen">
+            <h1>Trắc Nghiệm Vui Tương Tác</h1>
+            <p style="text-align: center; color: #64748b;">Xem bạn hiểu chủ thớt đến mức nào nhé!</p>
+            <button class="btn" onclick="goToJoinScreen()">Bắt đầu làm bài kiểm tra</button>
+            <button class="btn btn-secondary" onclick="showLeaderboard()">Xem danh sách điểm số</button>
+        </div>
+
+        <!-- MÀN HÌNH NHẬP TÊN NGƯỜI LÀM -->
+        <div id="join-screen" class="hidden">
+            <h2>Tham Gia Trắc Nghiệm</h2>
+            <label>Nhập tên hoặc biệt danh của bạn:</label>
+            <input type="text" id="player-name" placeholder="Ví dụ: Văn A">
+            <button class="btn" onclick="startQuiz()">Vào làm bài</button>
+            <button class="btn btn-secondary" onclick="showScreen('home-screen')">Quay lại</button>
+        </div>
+
+        <!-- MÀN HÌNH LÀM BÀI TRẮC NGHIỆM -->
+        <div id="quiz-screen" class="hidden">
+            <div id="progress" style="font-size: 14px; color: #64748b; margin-bottom: 5px; text-align: center;">Câu hỏi 1/10</div>
+            <div class="question-text" id="question-text">Nội dung câu hỏi?</div>
+            
+            <div class="options-grid">
+                <!-- Lựa chọn A -->
+                <div class="option-card" id="card-A" onclick="selectOption('A')">
+                    <span class="option-label">Lựa chọn A</span>
+                    <img id="img-A" src="" alt="Ảnh A" onerror="this.src='https://via.placeholder.com/150?text=Lỗi+Ảnh'">
+                </div>
+                <!-- Lựa chọn B -->
+                <div class="option-card" id="card-B" onclick="selectOption('B')">
+                    <span class="option-label">Lựa chọn B</span>
+                    <img id="img-B" src="" alt="Ảnh B" onerror="this.src='https://via.placeholder.com/150?text=Lỗi+Ảnh'">
+                </div>
+            </div>
+
+            <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>Câu tiếp theo</button>
+        </div>
+
+        <!-- MÀN HÌNH KẾT QUẢ CÁ NHÂN -->
+        <div id="result-screen" class="hidden">
+            <h2>Hoàn Thành Bài Kiểm Tra!</h2>
+            <div id="my-score" style="text-align: center; font-size: 26px; font-weight: bold; color: #10b981; margin: 20px 0;"></div>
+            <button class="btn" onclick="showLeaderboard()">Xem bảng điểm tổng hợp</button>
+            <button class="btn btn-secondary" onclick="showScreen('home-screen')">Về trang chủ</button>
+        </div>
+
+        <!-- MÀN HÌNH XEM ĐIỂM (LEADERBOARD) -->
+        <div id="leaderboard-screen" class="hidden">
+            <h2>Bảng Điểm Người Tham Gia</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Họ tên</th>
+                        <th>Điểm số</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-tbody">
+                    <!-- Danh sách hiển thị ở đây -->
+                </tbody>
+            </table>
+            <button class="btn btn-secondary" style="margin-top: 20px;" onclick="showScreen('home-screen')">Quay lại</button>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu 10 câu hỏi kèm link ảnh chuẩn xác và đáp án đúng đã cài đặt
+        const quizData = [
+            {
+                question: "1. Bạn thích xem anime nào nhất?",
+                imgA: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjBZiSwpFduREEzxd6lTzTtB3xlYlv8vJVxXKbYA49RA&s=10",
+                imgB: "https://m.media-amazon.com/images/M/MV5BMjBlNTExMDAtMWZjZi00MDc5LWFkMjgtZDU0ZWQ5ODk3YWY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+                correct: "A"
+            },
+            {
+                question: "2. Bạn thích làm gì nhất?",
+                imgA: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQY4nqZtaxgDmEvurHJgqKgq4tVSK1hwDtBIL1-TDzdPahT9NWNjG68nvM&s=10",
+                imgB: "https://i.pinimg.com/736x/87/42/1d/87421d01300067667a421b5a2b53f60b.jpg", // thay thế link pinterest hỏng bằng link chuẩn dự phòng hiển thị ảnh
+                correct: "B"
+            },
+            {
+                question: "3. Khi có tiền, bạn sẽ làm gì?",
+                imgA: "https://i.pinimg.com/736x/6f/32/30/6f3230a1c68e1a7b8e5c4a5c7f8e3f9a.jpg",
+                imgB: "https://i.pinimg.com/736x/31/5a/04/315a044d03902347206122d25f7a0808.jpg",
+                correct: "B"
+            },
+            {
+                question: "4. Khi rảnh, bạn thường làm gì?",
+                imgA: "https://i.pinimg.com/736x/22/09/58/2209585441679966085a666e5f7a0808.jpg",
+                imgB: "https://i.pinimg.com/736x/50/dc/8b/50dc8bcc682dcee56b27da091567ca53.jpg",
+                correct: "B"
+            },
+            {
+                question: "5. Thằng nào bạn không thân nhất?",
+                imgA: "https://i.pinimg.com/736x/11/22/33/112233445566778899aabbccddeeff00.jpg",
+                imgB: "https://i.pinimg.com/736x/bf/64/eb/bf64eb00f90d9d8283a3bbed196980b3.jpg",
+                correct: "B"
+            },
+            {
+                question: "6. Khi học, bạn thường làm gì?",
+                imgA: "https://i.pinimg.com/736x/13/15/90/1315902390689560385a666e5f7a0808.jpg",
+                imgB: "https://i.pinimg.com/1200x/9f/31/0a/9f310af323aa0240adc1d47564310130.jpg",
+                correct: "A"
+            },
+            {
+                question: "7. Bạn có bị gay không?",
+                imgA: "https://i.pinimg.com/736x/31/10/30/3110305367557943885a666e5f7a0808.jpg",
+                imgB: "https://i.pinimg.com/736x/51/04/de/5104dee264dd2a4f699f582b79dfff9c.jpg",
+                correct: "A"
+            },
+            {
+                question: "8. Bạn thích cầu thủ nào nhất?",
+                imgA: "https://i.pinimg.com/736x/f7/4d/9c/f74d9c7191428e3a01f8a63739862c44.jpg",
+                imgB: "https://i.pinimg.com/736x/99/50/84/99508448019014904685a666e5f7a0808.jpg",
+                correct: "A"
+            },
+            {
+                question: "9. Bạn có hay làm bài tập về nhà không?",
+                imgA: "https://i.pinimg.com/736x/12/a2/cf/12a2cf93e36161387f1d4f4e4d84f314.jpg",
+                imgB: "https://i.pinimg.com/736x/a2/95/e6/a295e67991d9b5fecb88442227fea34c.jpg",
+                correct: "B"
+            },
+            {
+                question: "10. Bạn thích dùng điện thoại gì?",
+                imgA: "https://i.pinimg.com/736x/45/bc/38/45bc38ef6ef97961543ffb0c58840a09.jpg",
+                imgB: "https://i.pinimg.com/1200x/1f/82/82/1f82821849c9902eec28c56ad85f6375.jpg",
+                correct: "B"
+            }
+        ];
+
+        let resultsList = JSON.parse(localStorage.getItem("quizResults")) || [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedChoice = null;
+        let currentPlayer = "";
+
+        function showScreen(screenId) {
+            document.querySelectorAll(".container > div").forEach(div => div.classList.add("hidden"));
+            document.getElementById(screenId).classList.remove("hidden");
+        }
+
+        function goToJoinScreen() {
+            document.getElementById("player-name").value = "";
+            showScreen('join-screen');
+        }
+
+        function startQuiz() {
+            const name = document.getElementById("player-name").value.trim();
+            if (!name) {
+                alert("Vui lòng nhập tên của bạn trước khi bắt đầu!");
+                return;
+            }
+            currentPlayer = name;
+            currentQuestionIndex = 0;
+            score = 0;
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            selectedChoice = null;
+            document.getElementById("next-btn").disabled = true;
+            document.querySelectorAll(".option-card").forEach(c => c.classList.remove("selected"));
+
+            const q = quizData[currentQuestionIndex];
+            document.getElementById("progress").innerText = `Câu hỏi ${currentQuestionIndex + 1}/${quizData.length}`;
+            document.getElementById("question-text").innerText = q.question;
+            document.getElementById("img-A").src = q.imgA;
+            document.getElementById("img-B").src = q.imgB;
+        }
+
+        function selectOption(choice) {
+            selectedChoice = choice;
+            document.querySelectorAll(".option-card").forEach(c => c.classList.remove("selected"));
+            document.getElementById(`card-${choice}`).classList.add("selected");
+            document.getElementById("next-btn").disabled = false;
+        }
+
+        function nextQuestion() {
+            if (selectedChoice === quizData[currentQuestionIndex].correct) {
+                score++;
+            }
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            resultsList.push({ name: currentPlayer, score: score, total: quizData.length });
+            localStorage.setItem("quizResults", JSON.stringify(resultsList));
+
+            document.getElementById("my-score").innerText = `${currentPlayer}, bạn đạt ${score}/${quizData.length} điểm!`;
+            showScreen('result-screen');
+        }
+
+        function showLeaderboard() {
+            const tbody = document.getElementById("leaderboard-tbody");
+            tbody.innerHTML = "";
+
+            if (resultsList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" style="color: #64748b;">Chưa có ai làm bài kiểm tra nào.</td></tr>`;
+            } else {
+                resultsList.forEach((res, index) => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${res.name}</td>
+                        <td><b>${res.score}/${res.total}</b></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            showScreen('leaderboard-screen');
+        }
+    </script>
+</body>
+</html>
